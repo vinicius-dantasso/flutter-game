@@ -1,0 +1,27 @@
+name: dungeon_mobile
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: '>=3.4.1 <4.0.0'
+
+dependencies:
+  flame: ^1.21.0
+  flame_tiled: ^1.21.0
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/tiles/
+    - assets/images/Player/
+    - assets/images/Terrain/
+    - assets/images/HUD/
