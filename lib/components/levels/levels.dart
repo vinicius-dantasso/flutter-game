@@ -1,9 +1,11 @@
 import 'dart:async';
 
+import 'package:dungeon_mobile/components/actors/pistol.dart';
 import 'package:flame/components.dart';
 import 'package:flame_tiled/flame_tiled.dart';
 
 import '../actors/player.dart';
+import '../actors/wall.dart';
 
 class Levels extends World {
   
@@ -16,6 +18,7 @@ class Levels extends World {
   });
 
   late TiledComponent level;
+  List<Wall> collisions = [];
 
   @override
   FutureOr<void> onLoad() async {
@@ -24,6 +27,7 @@ class Levels extends World {
     add(level);
 
     _spawnObjects();
+    _spawnCollisions();
 
     return super.onLoad();
   }
@@ -39,10 +43,39 @@ class Levels extends World {
             player.position = Vector2(spawnPoint.x, spawnPoint.y);
             add(player);
           break;
+
+          case 'Pistol':
+            final pistol = Pistol(
+              position: Vector2(spawnPoint.x, spawnPoint.y),
+              size: Vector2(spawnPoint.width, spawnPoint.height)
+            );
+            add(pistol);
+          break;
         }
       }
     }
 
+  }
+  
+  void _spawnCollisions() {
+    final collisionLayer = level.tileMap.getLayer<ObjectGroup>('Collisions');
+
+    if(collisionLayer != null) {
+      for(final collision in collisionLayer.objects) {
+        switch(collision.class_) {
+          default:
+            final wall = Wall(
+              position: Vector2(collision.x, collision.y),
+              size: Vector2(collision.width, collision.height)
+            );
+            collisions.add(wall);
+            add(wall);
+          break;
+        }
+      }
+
+      player.collisions = collisions;
+    }
   }
 
 }

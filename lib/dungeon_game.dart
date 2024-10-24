@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 
 import 'components/actors/player.dart';
 
-class DungeonGame extends FlameGame {
+class DungeonGame extends FlameGame with HasCollisionDetection {
 
   late final CameraComponent cam;
   late JoystickComponent joystick;
