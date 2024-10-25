@@ -23,7 +23,7 @@ class Enemy extends SpriteAnimationGroupComponent with HasGameRef<DungeonGame>, 
   double destX = 0;
   double destY = 0;
   double knockBackDir = 0;
-  double knobackBackSpd = 0;
+  double knockBackSpd = 0;
 
   int min = -50;
   int max = 50;

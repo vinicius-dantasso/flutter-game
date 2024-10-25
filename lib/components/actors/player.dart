@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:dungeon_mobile/components/actors/enemy.dart';
+import 'package:dungeon_mobile/components/utils/scripts.dart';
 import 'package:dungeon_mobile/dungeon_game.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
@@ -9,7 +11,7 @@ import '../actors/wall.dart';
 import '../utils/custom_hitbox.dart';
 import '../utils/utils.dart';
 
-enum PlayerState {idle, running}
+enum PlayerState {idle, running, hit, dead}
 
 class Player extends SpriteAnimationGroupComponent with HasGameRef<DungeonGame>, CollisionCallbacks {
 
@@ -20,6 +22,8 @@ class Player extends SpriteAnimationGroupComponent with HasGameRef<DungeonGame>,
 
   late final SpriteAnimation idleAnim;
   late final SpriteAnimation runAnim;
+  late final SpriteAnimation hitAnim;
+  late final SpriteAnimation deadAnim;
 
   late Pistol gun;
 
@@ -34,8 +38,11 @@ class Player extends SpriteAnimationGroupComponent with HasGameRef<DungeonGame>,
   double hSpd = 0;
   double vSpd = 0;
   double spd = 120;
+  double knockBackSpd = 0;
+  double knockBackDir = 0;
 
   bool lookingRight = true;
+  bool hit = false;
 
   Vector2 velocity = Vector2.zero();
 
@@ -54,8 +61,26 @@ class Player extends SpriteAnimationGroupComponent with HasGameRef<DungeonGame>,
 
   @override
   void update(double dt) {
-    _updatePlayerState();
-    _updatePlayerMovement(dt);
+    if(!hit) {
+      _updatePlayerState();
+      _updatePlayerMovement(dt);
+    }
+    else {
+      knockBackSpd = Scripts.lerp(knockBackSpd, 0, 0.3);
+      velocity.x = Scripts.lengthdirX(knockBackSpd, knockBackDir);
+      velocity.y = Scripts.lengthdirX(knockBackSpd, knockBackDir);
+
+      position.x += velocity.x * dt;
+      _checkHorizontalCollisions();
+
+      position.y += velocity.y * dt;
+      _checkVerticalCollisions();
+
+      Future.delayed(const Duration(milliseconds: 100), () {
+        hit = false;
+        current = PlayerState.idle;
+      });
+    }
 
     super.update(dt);
   }
@@ -67,6 +92,17 @@ class Player extends SpriteAnimationGroupComponent with HasGameRef<DungeonGame>,
       other.collidedWithPlayer();
       gun = other;
     }
+    else if(other is Enemy) {
+      hit = true;
+
+      double ox = other.position.x;
+      double oy = other.position.y;
+
+      double dir = Scripts.pointDirection(ox, oy, position.x, position.y);
+      knockBackDir = dir;
+      knockBackSpd = 200.0;
+      current = PlayerState.hit;
+    }
 
     super.onCollision(intersectionPoints, other);
   }
@@ -74,10 +110,14 @@ class Player extends SpriteAnimationGroupComponent with HasGameRef<DungeonGame>,
   void _loadAllAnims() {
     idleAnim = _setSprite('Idle', 2, 0.5);
     runAnim = _setSprite('Run', 4, 0.3);
+    hitAnim = _setSprite('Hit', 2, 0.2);
+    deadAnim = _setSprite('Dead', 1, 1);
 
     animations = {
       PlayerState.idle: idleAnim,
-      PlayerState.running: runAnim
+      PlayerState.running: runAnim,
+      PlayerState.hit: hitAnim,
+      PlayerState.dead: deadAnim
     };
 
     current = PlayerState.idle;

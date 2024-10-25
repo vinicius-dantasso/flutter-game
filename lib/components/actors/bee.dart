@@ -60,7 +60,7 @@ class Bee extends Enemy {
 
       double dir = Scripts.pointDirection(pX, pY, other.position.x, other.position.y);
       knockBackDir = dir;
-      knobackBackSpd = 150.0;
+      knockBackSpd = 150.0;
       state = EnemyState.hit;
 
       current = BeeAnim.hit;
@@ -92,10 +92,10 @@ class Bee extends Enemy {
   @override
   void hitState() {
     
-    knobackBackSpd = Scripts.lerp(knobackBackSpd, 0.0, 0.3);
+    knockBackSpd = Scripts.lerp(knockBackSpd, 0.0, 0.3);
 
-    velocity.x = Scripts.lengthdirX(knobackBackSpd, knockBackDir);
-    velocity.y = Scripts.lengthdirY(knobackBackSpd, knockBackDir);
+    velocity.x = Scripts.lengthdirX(knockBackSpd, knockBackDir);
+    velocity.y = Scripts.lengthdirY(knockBackSpd, knockBackDir);
 
     Future.delayed(const Duration(milliseconds: 100), () {
       hit = false;
