@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:dungeon_mobile/components/actors/bullet.dart';
 import 'package:dungeon_mobile/components/utils/custom_hitbox.dart';
+import 'package:dungeon_mobile/components/utils/scripts.dart';
 import 'package:dungeon_mobile/dungeon_game.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
@@ -20,8 +21,12 @@ class Pistol extends SpriteComponent with HasGameRef<DungeonGame>, CollisionCall
   late Player player;
 
   double offSetX = 0;
+  double minDist = 0;
+
   bool isShooting = false;
   bool canShoot = true;
+
+  Vector2 dist = Vector2.zero();
 
   final hitbox = CustomHitbox(
     offSetX: 0, 
@@ -77,7 +82,25 @@ class Pistol extends SpriteComponent with HasGameRef<DungeonGame>, CollisionCall
   
   void _shootBullet() {
     canShoot = false;
-    final bullet = Bullet(position: Vector2(position.x, position.y));
+
+    int index = 0;
+    for(final enemy in game.level.enemies) {
+      double value = Scripts.distanceToPoint(position.x, position.y, enemy.position.x, enemy.position.y);
+
+      if(index == 0) {
+        minDist = value;
+        dist = Vector2(enemy.position.x, enemy.position.y);
+      }
+      else {
+        if(minDist > value) {
+          minDist = value;
+          dist = Vector2(enemy.position.x, enemy.position.y);
+        }
+      }
+      index++;
+    }
+
+    final bullet = Bullet(position: Vector2(position.x, position.y), dest: dist);
     game.level.add(bullet);
   }
 }

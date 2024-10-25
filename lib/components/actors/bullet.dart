@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:dungeon_mobile/components/actors/bee.dart';
 import 'package:dungeon_mobile/components/actors/wall.dart';
 import 'package:dungeon_mobile/components/utils/custom_hitbox.dart';
 import 'package:dungeon_mobile/components/utils/scripts.dart';
@@ -8,9 +9,13 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 
 class Bullet extends SpriteComponent with HasGameRef<DungeonGame>, CollisionCallbacks {
+
+  Vector2 dest;
+
   Bullet({
     super.position,
-    super.size
+    super.size,
+    required this.dest
   });
 
   final hitbox = CustomHitbox(
@@ -23,8 +28,6 @@ class Bullet extends SpriteComponent with HasGameRef<DungeonGame>, CollisionCall
   double spd = 500;
   double hSpd = 0;
   double vSpd = 0;
-
-  Vector2 velocity = Vector2.zero();
 
   @override
   FutureOr<void> onLoad() {
@@ -42,7 +45,7 @@ class Bullet extends SpriteComponent with HasGameRef<DungeonGame>, CollisionCall
   @override
   void update(double dt) {
     
-    final spdDir = Scripts.pointDirection(position.x, position.y, position.x + 100, position.y - 40);
+    final spdDir = Scripts.pointDirection(position.x, position.y, dest.x, dest.y);
 
     hSpd = Scripts.lengthdirX(spd, spdDir);
     vSpd = Scripts.lengthdirY(spd, spdDir);
@@ -56,7 +59,7 @@ class Bullet extends SpriteComponent with HasGameRef<DungeonGame>, CollisionCall
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     
-    if(other is Wall) removeFromParent();
+    if(other is Wall || other is Bee) removeFromParent();
 
     super.onCollision(intersectionPoints, other);
   }

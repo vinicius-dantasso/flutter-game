@@ -21,6 +21,7 @@ class Levels extends World {
   late TiledComponent level;
   late Pistol pistol;
   List<Wall> collisions = [];
+  List<Bee> enemies = [];
 
   @override
   FutureOr<void> onLoad() async {
@@ -56,6 +57,7 @@ class Levels extends World {
 
           case 'Bee':
             final bee = Bee(position: Vector2(spawnPoint.x, spawnPoint.y));
+            enemies.add(bee);
             add(bee);
           break;
         }

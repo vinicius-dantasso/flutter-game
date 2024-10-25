@@ -47,8 +47,6 @@ class Bee extends SpriteAnimationGroupComponent with HasGameRef<DungeonGame> {
 
   @override
   FutureOr<void> onLoad() {
-    
-    debugMode = true;
     _loadAnims();
 
     add(RectangleHitbox(
