@@ -21,6 +21,8 @@ class Player extends SpriteAnimationGroupComponent with HasGameRef<DungeonGame>,
   late final SpriteAnimation idleAnim;
   late final SpriteAnimation runAnim;
 
+  late Pistol gun;
+
   List<Wall> collisions = [];
   CustomHitbox hitbox = CustomHitbox(
     offSetX: 22, 
@@ -31,7 +33,7 @@ class Player extends SpriteAnimationGroupComponent with HasGameRef<DungeonGame>,
 
   double hSpd = 0;
   double vSpd = 0;
-  double spd = 100;
+  double spd = 120;
 
   bool lookingRight = true;
 
@@ -41,7 +43,7 @@ class Player extends SpriteAnimationGroupComponent with HasGameRef<DungeonGame>,
   FutureOr<void> onLoad() {
 
     _loadAllAnims();
-    debugMode = true;
+
     add(RectangleHitbox(
       position: Vector2(hitbox.offSetX, hitbox.offSetY),
       size: Vector2(hitbox.width, hitbox.height),
@@ -61,7 +63,10 @@ class Player extends SpriteAnimationGroupComponent with HasGameRef<DungeonGame>,
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     
-    if(other is Pistol && !other.collected) other.collidedWithPlayer();
+    if(other is Pistol && !other.collected) {
+      other.collidedWithPlayer();
+      gun = other;
+    }
 
     super.onCollision(intersectionPoints, other);
   }

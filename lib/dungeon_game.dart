@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:dungeon_mobile/components/levels/levels.dart';
+import 'package:dungeon_mobile/components/utils/shot_buttom.dart';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,7 @@ class DungeonGame extends FlameGame with HasCollisionDetection {
   late final CameraComponent cam;
   late JoystickComponent joystick;
   late SpriteComponent gui;
+  late Levels level;
 
   Player player = Player();
   
@@ -20,7 +22,7 @@ class DungeonGame extends FlameGame with HasCollisionDetection {
     
     await images.loadAllImages();
 
-    final level = Levels(levelName: 'Level-00', player: player);
+    level = Levels(levelName: 'Level-00', player: player);
 
     cam = CameraComponent.withFixedResolution(world: level, width: 830, height: 510);
     cam.priority = 0;
@@ -28,6 +30,7 @@ class DungeonGame extends FlameGame with HasCollisionDetection {
 
     addGui();
     addJoyStick();
+    add(ShotButtom());
     addAll([cam, level]);
 
     return super.onLoad();

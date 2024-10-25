@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:dungeon_mobile/components/actors/bee.dart';
 import 'package:dungeon_mobile/components/actors/pistol.dart';
 import 'package:flame/components.dart';
 import 'package:flame_tiled/flame_tiled.dart';
@@ -18,6 +19,7 @@ class Levels extends World {
   });
 
   late TiledComponent level;
+  late Pistol pistol;
   List<Wall> collisions = [];
 
   @override
@@ -45,11 +47,16 @@ class Levels extends World {
           break;
 
           case 'Pistol':
-            final pistol = Pistol(
+            pistol = Pistol(
               position: Vector2(spawnPoint.x, spawnPoint.y),
               size: Vector2(spawnPoint.width, spawnPoint.height)
             );
             add(pistol);
+          break;
+
+          case 'Bee':
+            final bee = Bee(position: Vector2(spawnPoint.x, spawnPoint.y));
+            add(bee);
           break;
         }
       }

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:dungeon_mobile/components/actors/bullet.dart';
 import 'package:dungeon_mobile/components/utils/custom_hitbox.dart';
 import 'package:dungeon_mobile/dungeon_game.dart';
 import 'package:flame/collisions.dart';
@@ -19,6 +20,8 @@ class Pistol extends SpriteComponent with HasGameRef<DungeonGame>, CollisionCall
   late Player player;
 
   double offSetX = 0;
+  bool isShooting = false;
+  bool canShoot = true;
 
   final hitbox = CustomHitbox(
     offSetX: 0, 
@@ -29,8 +32,6 @@ class Pistol extends SpriteComponent with HasGameRef<DungeonGame>, CollisionCall
 
   @override
   FutureOr<void> onLoad() {
-    
-    debugMode = true;
     player = game.player;
 
     add(RectangleHitbox(
@@ -49,6 +50,8 @@ class Pistol extends SpriteComponent with HasGameRef<DungeonGame>, CollisionCall
     
     if(collected) {
       _updatePosition();
+
+      if(isShooting && canShoot) _shootBullet();
     }
 
     super.update(dt);
@@ -70,5 +73,11 @@ class Pistol extends SpriteComponent with HasGameRef<DungeonGame>, CollisionCall
 
     position.x = player.position.x + offSetX;
     position.y = player.position.y + 24;
+  }
+  
+  void _shootBullet() {
+    canShoot = false;
+    final bullet = Bullet(position: Vector2(position.x, position.y));
+    game.level.add(bullet);
   }
 }
