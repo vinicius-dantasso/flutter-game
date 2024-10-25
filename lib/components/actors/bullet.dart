@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:dungeon_mobile/components/actors/bee.dart';
 import 'package:dungeon_mobile/components/actors/wall.dart';
 import 'package:dungeon_mobile/components/utils/custom_hitbox.dart';
 import 'package:dungeon_mobile/components/utils/scripts.dart';
@@ -53,13 +52,15 @@ class Bullet extends SpriteComponent with HasGameRef<DungeonGame>, CollisionCall
     position.x += hSpd * dt;
     position.y += vSpd * dt;
 
+    Future.delayed(const Duration(seconds: 1), () => removeFromParent());
+
     super.update(dt);
   }
 
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     
-    if(other is Wall || other is Bee) removeFromParent();
+    if(other is Wall) removeFromParent();
 
     super.onCollision(intersectionPoints, other);
   }

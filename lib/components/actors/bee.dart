@@ -1,12 +1,13 @@
 import 'dart:async';
 
-import 'package:dungeon_mobile/components/actors/enemy.dart';
-import 'package:dungeon_mobile/components/utils/custom_hitbox.dart';
-import 'package:dungeon_mobile/components/utils/scripts.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 
 import '../utils/utils.dart';
+import '../utils/custom_hitbox.dart';
+import '../utils/scripts.dart';
+import '../actors/bullet.dart';
+import '../actors/enemy.dart';
 
 enum BeeAnim {idle, hit}
 
@@ -36,7 +37,7 @@ class Bee extends Enemy {
       size: Vector2(hitbox.width, hitbox.height)
     ));
 
-    collisions = game.player.collisions;
+    collisions = game.level.collisions;
 
     return super.onLoad();
   }
@@ -47,6 +48,62 @@ class Bee extends Enemy {
     _nextAction(dt);
 
     super.update(dt);
+  }
+
+  @override
+  void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
+    
+    if(other is Bullet) {
+      hit = true;
+      double pX = game.player.position.x;
+      double pY = game.player.position.y;
+
+      double dir = Scripts.pointDirection(pX, pY, other.position.x, other.position.y);
+      knockBackDir = dir;
+      knobackBackSpd = 150.0;
+      state = EnemyState.hit;
+
+      current = BeeAnim.hit;
+      other.removeFromParent();
+    }
+
+    super.onCollision(intersectionPoints, other);
+  }
+
+  @override
+  void followState() {
+    
+    destX = game.player.position.x;
+    destY = game.player.position.y;
+
+    double dir = Scripts.pointDirection(position.x, position.y, destX, destY);
+    velocity.x = Scripts.lengthdirX(spd, dir);
+    velocity.y = Scripts.lengthdirY(spd, dir);
+
+    if(Scripts.distanceToPoint(position.x, position.y, destX, destY) >= 150) {
+      velocity.x = 0.0;
+      velocity.y = 0.0;
+      state = EnemyState.choose;
+    }
+
+    super.followState();
+  }
+
+  @override
+  void hitState() {
+    
+    knobackBackSpd = Scripts.lerp(knobackBackSpd, 0.0, 0.3);
+
+    velocity.x = Scripts.lengthdirX(knobackBackSpd, knockBackDir);
+    velocity.y = Scripts.lengthdirY(knobackBackSpd, knockBackDir);
+
+    Future.delayed(const Duration(milliseconds: 100), () {
+      hit = false;
+      state = EnemyState.choose;
+      current = BeeAnim.idle;
+    });
+
+    super.hitState();
   }
   
   void _loadAnims() {
@@ -74,7 +131,10 @@ class Bee extends Enemy {
   
   void _nextAction(double dt) {
 
-    if(Scripts.distanceToPoint(position.x, position.y, game.player.position.x, game.player.position.y) <= 100) {
+    if(Scripts.distanceToPoint(
+      position.x, position.y, 
+      game.player.position.x, game.player.position.y
+    ) <= 100 && !hit) {
       state = EnemyState.follow;
     }
 
@@ -94,6 +154,10 @@ class Bee extends Enemy {
       case EnemyState.stop:
         velocity.x = 0.0;
         velocity.y = 0.0;
+      break;
+
+      case EnemyState.hit:
+        hitState();
       break;
     }
 
@@ -134,25 +198,6 @@ class Bee extends Enemy {
         velocity.y = 0;
       }
     }
-  }
-
-  @override
-  void followState() {
-    
-    destX = game.player.position.x;
-    destY = game.player.position.y;
-
-    double dir = Scripts.pointDirection(position.x, position.y, destX, destY);
-    velocity.x = Scripts.lengthdirX(spd, dir);
-    velocity.y = Scripts.lengthdirY(spd, dir);
-
-    if(Scripts.distanceToPoint(position.x, position.y, destX, destY) >= 150) {
-      velocity.x = 0.0;
-      velocity.y = 0.0;
-      state = EnemyState.choose;
-    }
-
-    super.followState();
   }
 
 }
