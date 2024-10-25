@@ -44,8 +44,8 @@
  <objectgroup id="3" name="Spawns">
   <object id="1" name="Player" type="Player" x="546" y="352.667" width="64" height="64"/>
   <object id="7" name="Pistol" type="Pistol" x="544" y="218" width="32" height="32"/>
-  <object id="14" name="Bee" type="Bee" x="709.333" y="184.667" width="32" height="32"/>
-  <object id="16" name="Bee" type="Bee" x="398.667" y="250" width="32" height="32"/>
+  <object id="14" name="Bee" type="Bee" x="600" y="126.667" width="32" height="32"/>
+  <object id="16" name="Bee" type="Bee" x="372.667" y="194.667" width="32" height="32"/>
  </objectgroup>
  <objectgroup id="4" name="Collisions">
   <object id="2" type="Wall" x="291.333" y="7.33333" width="30" height="476.667"/>

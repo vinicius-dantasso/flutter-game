@@ -1,19 +1,16 @@
 import 'dart:async';
-import 'dart:math';
 
-import 'package:dungeon_mobile/components/actors/wall.dart';
+import 'package:dungeon_mobile/components/actors/enemy.dart';
 import 'package:dungeon_mobile/components/utils/custom_hitbox.dart';
 import 'package:dungeon_mobile/components/utils/scripts.dart';
-import 'package:dungeon_mobile/dungeon_game.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 
 import '../utils/utils.dart';
 
 enum BeeAnim {idle, hit}
-enum BeeState {choose, wander, stop, follow}
 
-class Bee extends SpriteAnimationGroupComponent with HasGameRef<DungeonGame> {
+class Bee extends Enemy {
 
   Bee({
     super.position,
@@ -29,21 +26,6 @@ class Bee extends SpriteAnimationGroupComponent with HasGameRef<DungeonGame> {
 
   late final SpriteAnimation idleAnim;
   late final SpriteAnimation hitAnim;
-
-  Random rand = Random();
-  BeeState state = BeeState.choose;
-  late BeeState nextState;
-
-  List<Wall> collisions = [];
-
-  double spd = 100;
-  double destX = 0;
-  double destY = 0;
-
-  int min = -50;
-  int max = 50;
-
-  Vector2 velocity = Vector2.zero();
 
   @override
   FutureOr<void> onLoad() {
@@ -91,53 +73,27 @@ class Bee extends SpriteAnimationGroupComponent with HasGameRef<DungeonGame> {
   }
   
   void _nextAction(double dt) {
+
+    if(Scripts.distanceToPoint(position.x, position.y, game.player.position.x, game.player.position.y) <= 100) {
+      state = EnemyState.follow;
+    }
+
     switch(state) {
-      case BeeState.choose:
-
-        nextState = BeeState.values[rand.nextInt(BeeState.values.length)];
-
-        if(nextState == BeeState.wander) {
-          state = nextState;
-          destX = position.x + (min + rand.nextInt(max - min + 1));
-          destY = position.y + (min + rand.nextInt(max - min + 1));
-
-          Future.delayed(Duration(seconds: 1 + rand.nextInt(4)), () => state = BeeState.choose);
-        }
-        else {
-          state = BeeState.stop;
-          Future.delayed(Duration(seconds: 1 + rand.nextInt(4)), () => state = BeeState.choose);
-        }
-
+      case EnemyState.choose:
+        chooseState();
       break;
 
-      case BeeState.wander:
-
-        if(Scripts.distanceToPoint(position.x, position.y, destX, destY) > 10.0) {
-          final dir = Scripts.pointDirection(position.x, position.y, destX, destY);
-          velocity.x = Scripts.lengthdirX(spd, dir);
-          velocity.y = Scripts.lengthdirY(spd, dir);
-        }
-        else {
-          velocity.x = 0.0;
-          velocity.y = 0.0;
-        }
-
-        if(Scripts.distanceToPoint(position.x, position.y, destX, destY) < 1.0) {
-          velocity.x = 0;
-          velocity.y = 0;
-        }
-
+      case EnemyState.wander:
+        wanderState();
       break;
 
-      case BeeState.follow:
-
+      case EnemyState.follow:
+        followState();
       break;
 
-      case BeeState.stop:
-
+      case EnemyState.stop:
         velocity.x = 0.0;
         velocity.y = 0.0;
-
       break;
     }
 
@@ -178,6 +134,25 @@ class Bee extends SpriteAnimationGroupComponent with HasGameRef<DungeonGame> {
         velocity.y = 0;
       }
     }
+  }
+
+  @override
+  void followState() {
+    
+    destX = game.player.position.x;
+    destY = game.player.position.y;
+
+    double dir = Scripts.pointDirection(position.x, position.y, destX, destY);
+    velocity.x = Scripts.lengthdirX(spd, dir);
+    velocity.y = Scripts.lengthdirY(spd, dir);
+
+    if(Scripts.distanceToPoint(position.x, position.y, destX, destY) >= 150) {
+      velocity.x = 0.0;
+      velocity.y = 0.0;
+      state = EnemyState.choose;
+    }
+
+    super.followState();
   }
 
 }
