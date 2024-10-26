@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "Level-00.tmx",
+    "activeFile": "Level-03.tmx",
     "expandedProjectPaths": [
         "."
     ],
@@ -16,8 +16,8 @@
             "scale": 1.5,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 645.6666666666667,
-                "y": 256.6666666666667
+                "x": 574.9999999999999,
+                "y": 260
             }
         },
         "Level-01.tmx": {
@@ -26,10 +26,33 @@
                 4
             ],
             "scale": 1.5,
-            "selectedLayer": 2,
+            "selectedLayer": 3,
             "viewCenter": {
-                "x": 458.99999999999994,
-                "y": 276
+                "x": 489.66666666666674,
+                "y": 259.33333333333326
+            }
+        },
+        "Level-02.tmx": {
+            "expandedObjectLayers": [
+                3,
+                2
+            ],
+            "scale": 1.5,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 662.9999999999999,
+                "y": 253.3333333333333
+            }
+        },
+        "Level-03.tmx": {
+            "expandedObjectLayers": [
+                2
+            ],
+            "scale": 2,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 641.25,
+                "y": 260.5
             }
         },
         "dungeon_game.tsx": {
@@ -47,12 +70,18 @@
     "map.width": 26,
     "openFiles": [
         "dungeon_game.tsx",
-        "Level-00.tmx"
+        "Level-00.tmx",
+        "Level-01.tmx",
+        "Level-02.tmx",
+        "Level-03.tmx"
     ],
     "project": "dungeon_game.tiled-project",
     "recentFiles": [
         "dungeon_game.tsx",
         "Level-00.tmx",
+        "Level-01.tmx",
+        "Level-02.tmx",
+        "Level-03.tmx",
         "dungeon_game_door.tsx"
     ],
     "tileset.lastUsedFormat": "tsx",

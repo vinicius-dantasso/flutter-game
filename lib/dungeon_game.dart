@@ -24,7 +24,7 @@ class DungeonGame extends FlameGame with HasCollisionDetection {
 
   Player player = Player();
   Pistol pistol = Pistol();
-  List<String> levels = ['Level-00', 'Level-01'];
+  List<String> levels = ['Level-00', 'Level-01', 'Level-02', 'Level-03'];
   int currentLevel = -1;
 
   int show = 0;
