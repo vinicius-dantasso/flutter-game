@@ -10,28 +10,25 @@ import 'components/actors/player.dart';
 
 class DungeonGame extends FlameGame with HasCollisionDetection {
 
-  late final CameraComponent cam;
+  late CameraComponent cam;
   late JoystickComponent joystick;
   late SpriteComponent gui;
   late Levels level;
 
   Player player = Player();
+  List<String> levels = ['Level-00', 'Level-00'];
+  int currentLevel = 0;
   
   @override
   FutureOr<void> onLoad() async {
     
     await images.loadAllImages();
 
-    level = Levels(levelName: 'Level-00', player: player);
-
-    cam = CameraComponent.withFixedResolution(world: level, width: 830, height: 510);
-    cam.priority = 0;
-    cam.viewfinder.anchor = Anchor.topLeft;
+    _loadLevel();
 
     addGui();
     addJoyStick();
     add(ShotButtom());
-    addAll([cam, level]);
 
     return super.onLoad();
   }
@@ -119,6 +116,28 @@ class DungeonGame extends FlameGame with HasCollisionDetection {
     
     add(gui);
 
+  }
+
+  void loadNextLevel() {
+    if(currentLevel < levels.length - 1) {
+      currentLevel++;
+      _loadLevel();
+    }
+    else {
+      // Cabou os níveis
+    }
+  }
+  
+  void _loadLevel() {
+    Future.delayed(const Duration(seconds: 1), () {
+      level = Levels(levelName: levels[currentLevel], player: player);
+
+      cam = CameraComponent.withFixedResolution(world: level, width: 830, height: 510);
+      cam.priority = 0;
+      cam.viewfinder.anchor = Anchor.topLeft;
+
+      addAll([cam, level]);
+    });
   }
 
 }

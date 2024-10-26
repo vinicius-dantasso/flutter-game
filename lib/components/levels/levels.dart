@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:dungeon_mobile/components/actors/bee.dart';
+import 'package:dungeon_mobile/components/actors/door.dart';
 import 'package:dungeon_mobile/components/actors/pistol.dart';
 import 'package:flame/components.dart';
 import 'package:flame_tiled/flame_tiled.dart';
@@ -53,6 +54,13 @@ class Levels extends World {
               size: Vector2(spawnPoint.width, spawnPoint.height)
             );
             add(pistol);
+          break;
+
+          case 'Door':
+            final door = Door(
+              position: Vector2(spawnPoint.x, spawnPoint.y)
+            );
+            add(door);
           break;
 
           case 'Bee':

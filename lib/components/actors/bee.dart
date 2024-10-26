@@ -65,6 +65,8 @@ class Bee extends Enemy {
 
       current = BeeAnim.hit;
       other.removeFromParent();
+      removeFromParent();
+      game.level.enemies.remove(this);
     }
 
     super.onCollision(intersectionPoints, other);
