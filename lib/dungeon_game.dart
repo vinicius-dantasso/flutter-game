@@ -8,6 +8,7 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 
 import 'components/actors/player.dart';
+import 'components/levels/start_screen.dart';
 
 class DungeonGame extends FlameGame with HasCollisionDetection {
 
@@ -17,24 +18,26 @@ class DungeonGame extends FlameGame with HasCollisionDetection {
 
   late TextComponent floor;
   late TextComponent playerLife;
+  late TextComponent startText;
   late SpriteComponent gui;
   late SpriteComponent heart;
 
   Player player = Player();
   Pistol pistol = Pistol();
   List<String> levels = ['Level-00', 'Level-01'];
-  int currentLevel = 0;
+  int currentLevel = -1;
+
+  int show = 0;
+  int maxShow = 30;
+  bool canShow = true;
   
   @override
   FutureOr<void> onLoad() async {
     
     await images.loadAllImages();
 
-    _loadLevel();
-
-    addGui();
-    addJoyStick();
-    add(ShotButtom());
+    add(StartScreen());
+    _showStartText();
 
     return super.onLoad();
   }
@@ -42,10 +45,45 @@ class DungeonGame extends FlameGame with HasCollisionDetection {
   @override
   void update(double dt) {
     
-    updateJoyStick();
+    if(currentLevel >= 0) {
+      updateJoyStick();
 
-    floor.text = '$currentLevel';
-    playerLife.text = '${player.life}';
+      floor.text = '$currentLevel';
+      playerLife.text = '${player.life}';
+    }
+    else {
+      if(canShow) {
+
+        startText.textRenderer = TextPaint(
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 32,
+            fontFamily: 'Pixel',
+          ),
+        );
+
+        show++;
+        if(show >= maxShow) {
+          show = 0;
+          canShow = false;
+
+          startText.textRenderer = TextPaint(
+            style: const TextStyle(
+              color: Colors.white10,
+              fontSize: 32,
+              fontFamily: 'Pixel',
+            ),
+          );
+        }
+      }
+      else {
+        show++;
+        if(show >= maxShow) {
+          show = 0;
+          canShow = true;
+        }
+      }
+    }
 
     super.update(dt);
   }
@@ -168,20 +206,39 @@ class DungeonGame extends FlameGame with HasCollisionDetection {
 
   void loadNextLevel() {
     if(currentLevel < levels.length - 1) {
-
       level.children.where((component) => component != player && component != pistol).forEach((component) {
         component.removeFromParent();
       });
 
-      currentLevel++;
       level.collisions.clear();
       level.enemies.clear();
-      _loadLevel();
 
+      currentLevel++;
+      _loadLevel();
     }
     else {
       // Cabou os níveis
     }
+  }
+
+  void resetGame() {
+    removeAll(children);
+    currentLevel = -1;
+
+    player = Player();
+    pistol = Pistol();
+
+    add(StartScreen());
+    _showStartText();
+  }
+
+  void startGame() {
+    startText.removeFromParent();
+    currentLevel++;
+    _loadLevel();
+    addGui();
+    addJoyStick();
+    add(ShotButtom());
   }
   
   void _loadLevel() {
@@ -194,6 +251,23 @@ class DungeonGame extends FlameGame with HasCollisionDetection {
 
       addAll([cam, level]);
     });
+  }
+  
+  void _showStartText() {
+    startText = TextComponent(
+      text: 'Toque para Iniciar',
+      position: Vector2(size.x * 0.5, (size.y * 0.5) + 30),
+      anchor: Anchor.center,
+      textRenderer: TextPaint(
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 32,
+          fontFamily: 'Pixel',
+        ),
+      ),
+    );
+
+    add(startText);
   }
 
 }

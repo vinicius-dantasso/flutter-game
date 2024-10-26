@@ -42,7 +42,7 @@
 </data>
  </layer>
  <objectgroup id="3" name="Spawns">
-  <object id="1" name="Player" type="Player" x="700.667" y="357.334" width="64" height="64"/>
+  <object id="1" name="Player" type="Player" x="531.333" y="358.667" width="64" height="64"/>
   <object id="7" name="Pistol" type="Pistol" x="544" y="218" width="32" height="32"/>
   <object id="18" name="Door" type="Door" x="526.5" y="20" width="64" height="64"/>
   <object id="19" name="Trap" type="Trap" x="467.417" y="117.667" width="56" height="56"/>
@@ -50,7 +50,6 @@
   <object id="29" name="Trap" type="Trap" x="531.667" y="118.333" width="56" height="56"/>
   <object id="30" name="Trap" type="Trap" x="566.667" y="118.333" width="56" height="56"/>
   <object id="31" name="Trap" type="Trap" x="597.333" y="118.667" width="56" height="56"/>
-  <object id="32" name="Mage" type="Mage" x="326.667" y="80" width="64" height="64"/>
  </objectgroup>
  <objectgroup id="4" name="Collisions">
   <object id="2" type="Wall" x="291.333" y="7.33333" width="30" height="476.667"/>

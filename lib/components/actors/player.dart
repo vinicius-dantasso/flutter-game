@@ -47,6 +47,8 @@ class Player extends SpriteAnimationGroupComponent with HasGameRef<DungeonGame>,
 
   bool lookingRight = true;
   bool hasGun = false;
+  bool showOver = true;
+  bool isDead = false;
   bool hit = false;
 
   Vector2 velocity = Vector2.zero();
@@ -89,7 +91,11 @@ class Player extends SpriteAnimationGroupComponent with HasGameRef<DungeonGame>,
 
     if(life <= 0) {
       current = PlayerState.dead;
-      life = 0;
+      isDead = true;
+      if(showOver) {
+        showOver = false;
+        _showGameOver();
+      }
     }
 
     super.update(dt);
@@ -98,15 +104,15 @@ class Player extends SpriteAnimationGroupComponent with HasGameRef<DungeonGame>,
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     
-    if(other is Pistol && !other.collected) {
+    if(other is Pistol && !other.collected && life > 0) {
       other.collidedWithPlayer();
       gun = other;
       hasGun = true;
     }
-    else if(other is Enemy || (other is Trap && other.current == TrapState.open)) {
+    else if(other is Enemy || (other is Trap && other.current == TrapState.open) && life > 0) {
       _addKnockBack(other);
     }
-    else if(other is Bullet && other.isMagic) {
+    else if(other is Bullet && other.isMagic && life > 0) {
       _addKnockBack(other);
       other.removeFromParent();
     }
@@ -217,8 +223,20 @@ class Player extends SpriteAnimationGroupComponent with HasGameRef<DungeonGame>,
 
     double dir = Scripts.pointDirection(position.x, position.y, ox, oy);
     knockBackDir = dir;
-    knockBackSpd = 200.0;
+    knockBackSpd = 400.0;
     current = PlayerState.hit;
+  }
+  
+  void _showGameOver() {
+    final over = SpriteComponent(
+      sprite: Sprite(game.images.fromCache('Menus/Game_Over.png')),
+      position: Vector2((game.size.x * 0.5) - 200, (game.size.y * 0.5) - 100),
+      size: Vector2(400, 120),
+      priority: 4
+    );
+    game.add(over);
+
+    Future.delayed(const Duration(seconds: 10), () => game.resetGame());
   }
 
 }
