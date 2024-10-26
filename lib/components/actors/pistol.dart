@@ -113,22 +113,28 @@ class Pistol extends SpriteComponent with HasGameRef<DungeonGame>, CollisionCall
 
     int index = 0;
     for(final enemy in game.level.enemies) {
-      double value = Scripts.distanceToPoint(position.x, position.y, enemy.position.x, enemy.position.y);
+      double destX = enemy.position.x + (enemy.width * 0.5);
+      double destY = enemy.position.y + (enemy.height * 0.5);
+      
+      double value = Scripts.distanceToPoint(position.x, position.y, destX, destY);
 
       if(index == 0) {
         minDist = value;
-        dist = Vector2(enemy.position.x, enemy.position.y);
+        dist = Vector2(destX, destY);
       }
       else {
         if(minDist > value) {
           minDist = value;
-          dist = Vector2(enemy.position.x, enemy.position.y);
+          dist = Vector2(destX, destY);
         }
       }
       index++;
     }
 
-    final bullet = Bullet(position: Vector2(position.x, position.y), dest: dist);
+    final bullet = Bullet(
+      position: Vector2(position.x, position.y), 
+      dest: dist
+    );
     game.level.add(bullet);
   }
   

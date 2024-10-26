@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:dungeon_mobile/components/actors/bullet.dart';
 import 'package:dungeon_mobile/components/actors/enemy.dart';
 import 'package:dungeon_mobile/components/actors/trap.dart';
 import 'package:dungeon_mobile/components/utils/scripts.dart';
@@ -96,15 +97,11 @@ class Player extends SpriteAnimationGroupComponent with HasGameRef<DungeonGame>,
       hasGun = true;
     }
     else if(other is Enemy || (other is Trap && other.current == TrapState.open)) {
-      hit = true;
-
-      double ox = other.position.x;
-      double oy = other.position.y;
-
-      double dir = Scripts.pointDirection(ox, oy, position.x, position.y);
-      knockBackDir = dir;
-      knockBackSpd = 200.0;
-      current = PlayerState.hit;
+      _addKnockBack(other);
+    }
+    else if(other is Bullet && other.isMagic) {
+      _addKnockBack(other);
+      other.removeFromParent();
     }
 
     super.onCollision(intersectionPoints, other);
@@ -202,6 +199,18 @@ class Player extends SpriteAnimationGroupComponent with HasGameRef<DungeonGame>,
         velocity.y = 0;
       }
     }
+  }
+  
+  void _addKnockBack(other) {
+    hit = true;
+
+      double ox = other.position.x;
+      double oy = other.position.y;
+
+      double dir = Scripts.pointDirection(position.x, position.y, ox, oy);
+      knockBackDir = dir;
+      knockBackSpd = 200.0;
+      current = PlayerState.hit;
   }
 
 }

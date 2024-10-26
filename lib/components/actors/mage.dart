@@ -1,35 +1,41 @@
 import 'dart:async';
 
+import 'package:dungeon_mobile/components/actors/bullet.dart';
+import 'package:dungeon_mobile/components/actors/enemy.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 
-import '../utils/utils.dart';
 import '../utils/custom_hitbox.dart';
 import '../utils/scripts.dart';
-import '../actors/bullet.dart';
-import '../actors/enemy.dart';
+import '../utils/utils.dart';
 
-enum BeeAnim {idle, hit}
+enum MageAnim {idle, run, attack, hit}
 
-class Bee extends Enemy {
+class Mage extends Enemy {
 
-  Bee({
+  Mage({
     super.position,
     super.anchor = Anchor.topLeft
   });
 
   final hitbox = CustomHitbox(
-    offSetX: 8, 
-    offSetY: 8, 
-    width: 20, 
-    height: 18
+    offSetX: 16, 
+    offSetY: 16, 
+    width: 30, 
+    height: 28
   );
 
   late final SpriteAnimation idleAnim;
+  late final SpriteAnimation runAnim;
+  late final SpriteAnimation attackAnim;
   late final SpriteAnimation hitAnim;
+
+  int castCharge = 0;
+  int cast = 60 * 2;
 
   @override
   FutureOr<void> onLoad() {
+    debugMode = true;
     _loadAnims();
 
     add(RectangleHitbox(
@@ -46,7 +52,7 @@ class Bee extends Enemy {
   void update(double dt) {
 
     _nextAction(dt);
-
+    
     if(velocity.x < 0 && scale.x > 0) {
       flipHorizontallyAroundCenter();
     }
@@ -60,7 +66,7 @@ class Bee extends Enemy {
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     
-    if(other is Bullet) {
+    if(other is Bullet && !other.isMagic) {
       hit = true;
       double pX = game.player.position.x;
       double pY = game.player.position.y;
@@ -70,7 +76,7 @@ class Bee extends Enemy {
       knockBackSpd = 150.0;
       state = EnemyState.hit;
 
-      current = BeeAnim.hit;
+      current = MageAnim.hit;
       other.removeFromParent();
       removeFromParent();
       game.level.enemies.remove(this);
@@ -82,16 +88,27 @@ class Bee extends Enemy {
   @override
   void followState() {
     
-    destX = game.player.position.x;
-    destY = game.player.position.y;
+    castCharge++;
+    if(castCharge >= cast) {
+      castCharge = 0;
+      current = MageAnim.attack;
 
-    double dir = Scripts.pointDirection(position.x, position.y, destX, destY);
-    velocity.x = Scripts.lengthdirX(spd, dir);
-    velocity.y = Scripts.lengthdirY(spd, dir);
+      double dX = game.player.position.x + (game.player.width * 0.5);
+      double dY = game.player.position.y + (game.player.height * 0.5);
 
-    if(Scripts.distanceToPoint(position.x, position.y, destX, destY) >= 250) {
-      velocity.x = 0.0;
-      velocity.y = 0.0;
+      final magic = Bullet(
+        position: Vector2(position.x, position.y),
+        dest: Vector2(dX, dY),
+        isMagic: true
+      );
+
+      game.level.add(magic);
+    }
+
+    if(Scripts.distanceToPoint(
+      position.x, position.y, 
+      game.player.position.x, game.player.position.y
+    ) <= 300) {
       state = EnemyState.choose;
     }
 
@@ -109,31 +126,37 @@ class Bee extends Enemy {
     Future.delayed(const Duration(milliseconds: 100), () {
       hit = false;
       state = EnemyState.choose;
-      current = BeeAnim.idle;
+      current = MageAnim.idle;
     });
 
     super.hitState();
   }
   
   void _loadAnims() {
-    idleAnim = _setSprite('Idle', 2);
-    hitAnim = _setSprite('Hit', 2);
+
+    idleAnim = _setSprite('Idle', 1, 1.0);
+    runAnim = _setSprite('Run', 4, 0.2);
+    attackAnim = _setSprite('Attack', 1, 1.0);
+    hitAnim = _setSprite('Hit', 1, 1.0);
 
     animations = {
-      BeeAnim.idle: idleAnim,
-      BeeAnim.hit: hitAnim
+      MageAnim.idle: idleAnim,
+      MageAnim.run: runAnim,
+      MageAnim.attack: attackAnim,
+      MageAnim.hit: hitAnim
     };
 
-    current = BeeAnim.idle;
+    current = MageAnim.idle;
+
   }
   
-  SpriteAnimation _setSprite(String state, int amount) {
+  SpriteAnimation _setSprite(String state, int amount, double stepTime) {
     return SpriteAnimation.fromFrameData(
-      game.images.fromCache('Enemies/Bee/$state.png'),
+      game.images.fromCache('Enemies/Mage/$state.png'),
       SpriteAnimationData.sequenced(
         amount: amount, 
-        stepTime: 0.2, 
-        textureSize: Vector2.all(32)
+        stepTime: stepTime, 
+        textureSize: Vector2.all(64)
       )
     );
   }
@@ -143,7 +166,7 @@ class Bee extends Enemy {
     if(Scripts.distanceToPoint(
       position.x, position.y, 
       game.player.position.x, game.player.position.y
-    ) <= 200 && !hit) {
+    ) <= 250 && !hit) {
       state = EnemyState.follow;
     }
 
@@ -153,6 +176,7 @@ class Bee extends Enemy {
       break;
 
       case EnemyState.wander:
+        current = MageAnim.run;
         wanderState();
       break;
 
@@ -161,6 +185,7 @@ class Bee extends Enemy {
       break;
 
       case EnemyState.stop:
+        current = MageAnim.idle;
         velocity.x = 0.0;
         velocity.y = 0.0;
       break;
@@ -175,6 +200,7 @@ class Bee extends Enemy {
 
     position.y += velocity.y * dt;
     _checkVerticalCollisions();
+
   }
 
   void _checkHorizontalCollisions() {

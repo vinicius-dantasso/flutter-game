@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:dungeon_mobile/components/actors/bee.dart';
 import 'package:dungeon_mobile/components/actors/door.dart';
+import 'package:dungeon_mobile/components/actors/enemy.dart';
+import 'package:dungeon_mobile/components/actors/mage.dart';
 import 'package:dungeon_mobile/components/actors/pistol.dart';
 import 'package:dungeon_mobile/components/actors/trap.dart';
 import 'package:flame/components.dart';
@@ -24,7 +26,7 @@ class Levels extends World {
 
   late TiledComponent level;
   List<Wall> collisions = [];
-  List<Bee> enemies = [];
+  List<Enemy> enemies = [];
 
   @override
   FutureOr<void> onLoad() async {
@@ -77,6 +79,12 @@ class Levels extends World {
             final bee = Bee(position: Vector2(spawnPoint.x, spawnPoint.y));
             enemies.add(bee);
             add(bee);
+          break;
+
+          case 'Mage':
+            final mage = Mage(position: Vector2(spawnPoint.x, spawnPoint.y));
+            enemies.add(mage);
+            add(mage);
           break;
         }
       }

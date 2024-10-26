@@ -10,11 +10,13 @@ import 'package:flame/components.dart';
 class Bullet extends SpriteComponent with HasGameRef<DungeonGame>, CollisionCallbacks {
 
   Vector2 dest;
+  bool isMagic;
 
   Bullet({
     super.position,
     super.size,
-    required this.dest
+    required this.dest,
+    this.isMagic = false
   });
 
   final hitbox = CustomHitbox(
@@ -35,8 +37,13 @@ class Bullet extends SpriteComponent with HasGameRef<DungeonGame>, CollisionCall
       position: Vector2(hitbox.offSetX, hitbox.offSetY),
       size: Vector2(hitbox.width, hitbox.height),
     ));
-    
-    sprite = Sprite(game.images.fromCache('Items/Bullet.png'));
+
+    if(!isMagic) {
+      sprite = Sprite(game.images.fromCache('Items/Bullet.png'));
+    }
+    else {
+      sprite = Sprite(game.images.fromCache('Items/Magic.png'));
+    }
 
     return super.onLoad();
   }
@@ -52,7 +59,7 @@ class Bullet extends SpriteComponent with HasGameRef<DungeonGame>, CollisionCall
     position.x += hSpd * dt;
     position.y += vSpd * dt;
 
-    Future.delayed(const Duration(seconds: 1), () => removeFromParent());
+    Future.delayed(const Duration(milliseconds: 500), () => removeFromParent());
 
     super.update(dt);
   }
