@@ -10,13 +10,26 @@
     "fileStates": {
         "Level-00.tmx": {
             "expandedObjectLayers": [
-                3
+                3,
+                4
             ],
             "scale": 1.5,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 625,
-                "y": 269.66666666666663
+                "x": 572.3333333333333,
+                "y": 331.33333333333326
+            }
+        },
+        "Level-01.tmx": {
+            "expandedObjectLayers": [
+                3,
+                4
+            ],
+            "scale": 1.5,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 458.99999999999994,
+                "y": 276
             }
         },
         "dungeon_game.tsx": {
@@ -29,18 +42,18 @@
         }
     },
     "last.imagePath": "C:/Users/vinic/OneDrive/Área de Trabalho/Faculdade/Quinto Periodo/Programação de Jogos/prog-jogos-projeto-2/Resources",
-    "map.height": 26,
+    "map.height": 16,
     "map.lastUsedFormat": "tmx",
-    "map.width": 16,
+    "map.width": 26,
     "openFiles": [
         "dungeon_game.tsx",
         "Level-00.tmx"
     ],
     "project": "dungeon_game.tiled-project",
     "recentFiles": [
-        "dungeon_game_door.tsx",
         "dungeon_game.tsx",
-        "Level-00.tmx"
+        "Level-00.tmx",
+        "dungeon_game_door.tsx"
     ],
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {

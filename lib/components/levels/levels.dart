@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:dungeon_mobile/components/actors/bee.dart';
 import 'package:dungeon_mobile/components/actors/door.dart';
 import 'package:dungeon_mobile/components/actors/pistol.dart';
+import 'package:dungeon_mobile/components/actors/trap.dart';
 import 'package:flame/components.dart';
 import 'package:flame_tiled/flame_tiled.dart';
 
@@ -13,14 +14,15 @@ class Levels extends World {
   
   final String levelName;
   final Player player;
+  final Pistol pistol;
 
   Levels({
     required this.levelName,
-    required this.player
+    required this.player,
+    required this.pistol
   });
 
   late TiledComponent level;
-  late Pistol pistol;
   List<Wall> collisions = [];
   List<Bee> enemies = [];
 
@@ -45,14 +47,14 @@ class Levels extends World {
         switch(spawnPoint.class_) {
           case 'Player':
             player.position = Vector2(spawnPoint.x, spawnPoint.y);
+            player.priority = 2;
             add(player);
           break;
 
           case 'Pistol':
-            pistol = Pistol(
-              position: Vector2(spawnPoint.x, spawnPoint.y),
-              size: Vector2(spawnPoint.width, spawnPoint.height)
-            );
+            pistol.position = Vector2(spawnPoint.x, spawnPoint.y);
+            pistol.size = Vector2(spawnPoint.width, spawnPoint.height);
+            pistol.priority = 2;
             add(pistol);
           break;
 
@@ -61,6 +63,14 @@ class Levels extends World {
               position: Vector2(spawnPoint.x, spawnPoint.y)
             );
             add(door);
+          break;
+
+          case 'Trap':
+            final trap = Trap(
+              position: Vector2(spawnPoint.x, spawnPoint.y),
+              size: Vector2.all(56)
+            );
+            add(trap);
           break;
 
           case 'Bee':

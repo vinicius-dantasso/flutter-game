@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:dungeon_mobile/components/actors/enemy.dart';
+import 'package:dungeon_mobile/components/actors/trap.dart';
 import 'package:dungeon_mobile/components/utils/scripts.dart';
 import 'package:dungeon_mobile/dungeon_game.dart';
 import 'package:flame/collisions.dart';
@@ -42,6 +43,7 @@ class Player extends SpriteAnimationGroupComponent with HasGameRef<DungeonGame>,
   double knockBackDir = 0;
 
   bool lookingRight = true;
+  bool hasGun = false;
   bool hit = false;
 
   Vector2 velocity = Vector2.zero();
@@ -91,8 +93,9 @@ class Player extends SpriteAnimationGroupComponent with HasGameRef<DungeonGame>,
     if(other is Pistol && !other.collected) {
       other.collidedWithPlayer();
       gun = other;
+      hasGun = true;
     }
-    else if(other is Enemy) {
+    else if(other is Enemy || (other is Trap && other.current == TrapState.open)) {
       hit = true;
 
       double ox = other.position.x;

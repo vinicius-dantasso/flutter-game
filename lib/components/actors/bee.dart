@@ -82,7 +82,7 @@ class Bee extends Enemy {
     velocity.x = Scripts.lengthdirX(spd, dir);
     velocity.y = Scripts.lengthdirY(spd, dir);
 
-    if(Scripts.distanceToPoint(position.x, position.y, destX, destY) >= 150) {
+    if(Scripts.distanceToPoint(position.x, position.y, destX, destY) >= 250) {
       velocity.x = 0.0;
       velocity.y = 0.0;
       state = EnemyState.choose;
@@ -136,7 +136,7 @@ class Bee extends Enemy {
     if(Scripts.distanceToPoint(
       position.x, position.y, 
       game.player.position.x, game.player.position.y
-    ) <= 100 && !hit) {
+    ) <= 200 && !hit) {
       state = EnemyState.follow;
     }
 

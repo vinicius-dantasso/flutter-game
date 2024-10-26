@@ -20,6 +20,11 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
+  fonts:
+    - family: Pixel
+      fonts:
+        - asset: assets/fonts/M5X7.ttf
+
   assets:
     - assets/tiles/
     - assets/images/Player/
@@ -27,3 +32,4 @@ flutter:
     - assets/images/HUD/
     - assets/images/Items/
     - assets/images/Enemies/Bee/
+    - assets/images/Traps/

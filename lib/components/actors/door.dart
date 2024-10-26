@@ -40,7 +40,7 @@ class Door extends SpriteGroupComponent with HasGameRef<DungeonGame>, CollisionC
   @override
   void update(double dt) {
     
-    if(game.level.enemies.isEmpty) {
+    if(game.level.enemies.isEmpty && game.player.hasGun) {
       current = DoorState.open;
     }
 

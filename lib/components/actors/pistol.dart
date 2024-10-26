@@ -19,12 +19,18 @@ class Pistol extends SpriteComponent with HasGameRef<DungeonGame>, CollisionCall
   });
 
   late Player player;
+  late SpriteComponent sprAmmo;
+
+  List<SpriteComponent> ammos = [];
 
   double offSetX = 0;
   double minDist = 0;
 
+  int ammo = 0;
+
   bool isShooting = false;
   bool canShoot = true;
+  bool drawIcon = true;
 
   Vector2 dist = Vector2.zero();
 
@@ -56,7 +62,27 @@ class Pistol extends SpriteComponent with HasGameRef<DungeonGame>, CollisionCall
     if(collected) {
       _updatePosition();
 
-      if(isShooting && canShoot) _shootBullet();
+      if(isShooting && canShoot && ammo > 0) {
+        _shootBullet();
+      }
+      
+      if(ammo <= 0) {
+        Future.delayed(const Duration(seconds: 1), () {
+          ammo = 20;
+          _drawAmmo();
+        });
+      }
+
+      if(drawIcon) {
+        drawIcon = false;
+        final icon = SpriteComponent(
+          sprite: Sprite(game.images.fromCache('HUD/Pistol_Solo.png')),
+          position: Vector2(180, 210),
+          size: Vector2.all(64),
+          priority: 2
+        );
+        game.add(icon);
+      }
     }
 
     super.update(dt);
@@ -82,6 +108,8 @@ class Pistol extends SpriteComponent with HasGameRef<DungeonGame>, CollisionCall
   
   void _shootBullet() {
     canShoot = false;
+    ammo--;
+    ammos.removeLast().removeFromParent();
 
     int index = 0;
     for(final enemy in game.level.enemies) {
@@ -102,5 +130,23 @@ class Pistol extends SpriteComponent with HasGameRef<DungeonGame>, CollisionCall
 
     final bullet = Bullet(position: Vector2(position.x, position.y), dest: dist);
     game.level.add(bullet);
+  }
+  
+  void _drawAmmo() {
+    for(final ammoSprite in ammos) {
+      ammoSprite.removeFromParent();
+    }
+    ammos.clear();
+
+    for(int i = 0; i<ammo; i++) {
+      sprAmmo = SpriteComponent(
+        sprite: Sprite(game.images.fromCache('HUD/Ammo.png')),
+        position: Vector2(135 + ((i - 1) * 6), 280),
+        size: Vector2(6,16),
+        priority: 2
+      );
+      ammos.add(sprAmmo);
+      game.add(sprAmmo);
+    }
   }
 }

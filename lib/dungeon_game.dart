@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:dungeon_mobile/components/actors/pistol.dart';
 import 'package:dungeon_mobile/components/levels/levels.dart';
 import 'package:dungeon_mobile/components/utils/shot_buttom.dart';
 import 'package:flame/components.dart';
@@ -12,11 +13,15 @@ class DungeonGame extends FlameGame with HasCollisionDetection {
 
   late CameraComponent cam;
   late JoystickComponent joystick;
-  late SpriteComponent gui;
   late Levels level;
 
+  late TextComponent floor;
+  late TextComponent debugText;
+  late SpriteComponent gui;
+
   Player player = Player();
-  List<String> levels = ['Level-00', 'Level-00'];
+  Pistol pistol = Pistol();
+  List<String> levels = ['Level-00', 'Level-01'];
   int currentLevel = 0;
   
   @override
@@ -37,6 +42,8 @@ class DungeonGame extends FlameGame with HasCollisionDetection {
   void update(double dt) {
     
     updateJoyStick();
+
+    floor.text = '$currentLevel';
 
     super.update(dt);
   }
@@ -105,23 +112,46 @@ class DungeonGame extends FlameGame with HasCollisionDetection {
 
   }
   
-  void addGui() {
+  void addGui() async {
 
     gui = SpriteComponent(
       sprite: Sprite(images.fromCache('HUD/GUI.png')),
       size: Vector2(240, 360),
-      position: Vector2(90,0),
-      priority: 0
+      position: Vector2(100,10),
+      priority: 1
     );
     
     add(gui);
+
+    floor = TextComponent(
+      text: '$currentLevel',
+      position: Vector2(198,90),
+      textRenderer: TextPaint(
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 56,
+          fontFamily: 'Pixel'
+        )
+      ),
+      priority: 2,
+    );
+
+    add(floor);
 
   }
 
   void loadNextLevel() {
     if(currentLevel < levels.length - 1) {
+
+      level.children.where((component) => component != player && component != pistol).forEach((component) {
+        component.removeFromParent();
+      });
+
       currentLevel++;
+      level.collisions.clear();
+      level.enemies.clear();
       _loadLevel();
+
     }
     else {
       // Cabou os níveis
@@ -130,7 +160,7 @@ class DungeonGame extends FlameGame with HasCollisionDetection {
   
   void _loadLevel() {
     Future.delayed(const Duration(seconds: 1), () {
-      level = Levels(levelName: levels[currentLevel], player: player);
+      level = Levels(levelName: levels[currentLevel], player: player, pistol: pistol);
 
       cam = CameraComponent.withFixedResolution(world: level, width: 830, height: 510);
       cam.priority = 0;
