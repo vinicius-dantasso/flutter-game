@@ -16,8 +16,9 @@ class DungeonGame extends FlameGame with HasCollisionDetection {
   late Levels level;
 
   late TextComponent floor;
-  late TextComponent debugText;
+  late TextComponent playerLife;
   late SpriteComponent gui;
+  late SpriteComponent heart;
 
   Player player = Player();
   Pistol pistol = Pistol();
@@ -44,6 +45,7 @@ class DungeonGame extends FlameGame with HasCollisionDetection {
     updateJoyStick();
 
     floor.text = '$currentLevel';
+    playerLife.text = '${player.life}';
 
     super.update(dt);
   }
@@ -137,6 +139,30 @@ class DungeonGame extends FlameGame with HasCollisionDetection {
     );
 
     add(floor);
+
+    heart = SpriteComponent(
+      sprite: Sprite(images.fromCache('HUD/Heart.png')),
+      size: Vector2(32, 28),
+      position: Vector2(128,326),
+      priority: 2
+    );
+
+    add(heart);
+
+    playerLife = TextComponent(
+      text: '${player.life}',
+      position: Vector2(150,330),
+      textRenderer: TextPaint(
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 36,
+          fontFamily: 'Pixel'
+        )
+      ),
+      priority: 3,
+    );
+
+    add(playerLife);
 
   }
 

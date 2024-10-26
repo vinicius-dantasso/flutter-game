@@ -30,6 +30,7 @@ class Mage extends Enemy {
   late final SpriteAnimation attackAnim;
   late final SpriteAnimation hitAnim;
 
+  int life = 4;
   int castCharge = 0;
   int cast = 60 * 2;
 
@@ -52,6 +53,11 @@ class Mage extends Enemy {
   void update(double dt) {
 
     _nextAction(dt);
+
+    if(life <= 0) {
+      removeFromParent();
+      game.level.enemies.remove(this);
+    }
     
     if(velocity.x < 0 && scale.x > 0) {
       flipHorizontallyAroundCenter();
@@ -67,6 +73,7 @@ class Mage extends Enemy {
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     
     if(other is Bullet && !other.isMagic) {
+      life--;
       hit = true;
       double pX = game.player.position.x;
       double pY = game.player.position.y;
@@ -78,8 +85,6 @@ class Mage extends Enemy {
 
       current = MageAnim.hit;
       other.removeFromParent();
-      removeFromParent();
-      game.level.enemies.remove(this);
     }
 
     super.onCollision(intersectionPoints, other);

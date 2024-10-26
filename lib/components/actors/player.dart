@@ -43,6 +43,8 @@ class Player extends SpriteAnimationGroupComponent with HasGameRef<DungeonGame>,
   double knockBackSpd = 0;
   double knockBackDir = 0;
 
+  int life = 3;
+
   bool lookingRight = true;
   bool hasGun = false;
   bool hit = false;
@@ -64,11 +66,11 @@ class Player extends SpriteAnimationGroupComponent with HasGameRef<DungeonGame>,
 
   @override
   void update(double dt) {
-    if(!hit) {
+    if(!hit && life > 0) {
       _updatePlayerState();
       _updatePlayerMovement(dt);
     }
-    else {
+    else if(hit && life > 0) {
       knockBackSpd = Scripts.lerp(knockBackSpd, 0, 0.3);
       velocity.x = Scripts.lengthdirX(knockBackSpd, knockBackDir);
       velocity.y = Scripts.lengthdirX(knockBackSpd, knockBackDir);
@@ -83,6 +85,11 @@ class Player extends SpriteAnimationGroupComponent with HasGameRef<DungeonGame>,
         hit = false;
         current = PlayerState.idle;
       });
+    }
+
+    if(life <= 0) {
+      current = PlayerState.dead;
+      life = 0;
     }
 
     super.update(dt);
@@ -203,14 +210,15 @@ class Player extends SpriteAnimationGroupComponent with HasGameRef<DungeonGame>,
   
   void _addKnockBack(other) {
     hit = true;
+    life--;
 
-      double ox = other.position.x;
-      double oy = other.position.y;
+    double ox = other.position.x;
+    double oy = other.position.y;
 
-      double dir = Scripts.pointDirection(position.x, position.y, ox, oy);
-      knockBackDir = dir;
-      knockBackSpd = 200.0;
-      current = PlayerState.hit;
+    double dir = Scripts.pointDirection(position.x, position.y, ox, oy);
+    knockBackDir = dir;
+    knockBackSpd = 200.0;
+    current = PlayerState.hit;
   }
 
 }

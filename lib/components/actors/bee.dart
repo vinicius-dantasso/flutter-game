@@ -28,6 +28,8 @@ class Bee extends Enemy {
   late final SpriteAnimation idleAnim;
   late final SpriteAnimation hitAnim;
 
+  int life = 2;
+
   @override
   FutureOr<void> onLoad() {
     _loadAnims();
@@ -47,6 +49,11 @@ class Bee extends Enemy {
 
     _nextAction(dt);
 
+    if(life <= 0) {
+      removeFromParent();
+      game.level.enemies.remove(this);
+    }
+
     if(velocity.x < 0 && scale.x > 0) {
       flipHorizontallyAroundCenter();
     }
@@ -62,6 +69,7 @@ class Bee extends Enemy {
     
     if(other is Bullet) {
       hit = true;
+      life--;
       double pX = game.player.position.x;
       double pY = game.player.position.y;
 
@@ -72,8 +80,6 @@ class Bee extends Enemy {
 
       current = BeeAnim.hit;
       other.removeFromParent();
-      removeFromParent();
-      game.level.enemies.remove(this);
     }
 
     super.onCollision(intersectionPoints, other);
