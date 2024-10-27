@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:dungeon_mobile/components/actors/wall.dart';
 import 'package:dungeon_mobile/components/utils/custom_hitbox.dart';
-import 'package:dungeon_mobile/components/utils/scripts.dart';
 import 'package:dungeon_mobile/dungeon_game.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
@@ -51,15 +50,9 @@ class Bullet extends SpriteComponent with HasGameRef<DungeonGame>, CollisionCall
   @override
   void update(double dt) {
     
-    final spdDir = Scripts.pointDirection(position.x, position.y, dest.x, dest.y);
+    position += dest * spd * dt;
 
-    hSpd = Scripts.lengthdirX(spd, spdDir);
-    vSpd = Scripts.lengthdirY(spd, spdDir);
-
-    position.x += hSpd * dt;
-    position.y += vSpd * dt;
-
-    Future.delayed(const Duration(milliseconds: 500), () => removeFromParent());
+    Future.delayed(const Duration(milliseconds: 800), () => removeFromParent());
 
     super.update(dt);
   }

@@ -50,8 +50,8 @@ class Bee extends Enemy {
     _nextAction(dt);
 
     if(life <= 0) {
-      removeFromParent();
       game.level.enemies.remove(this);
+      removeFromParent();
     }
 
     if(velocity.x < 0 && scale.x > 0) {

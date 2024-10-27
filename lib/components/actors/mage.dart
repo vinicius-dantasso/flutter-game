@@ -36,7 +36,6 @@ class Mage extends Enemy {
 
   @override
   FutureOr<void> onLoad() {
-    debugMode = true;
     _loadAnims();
 
     add(RectangleHitbox(
@@ -55,8 +54,8 @@ class Mage extends Enemy {
     _nextAction(dt);
 
     if(life <= 0) {
-      removeFromParent();
       game.level.enemies.remove(this);
+      removeFromParent();
     }
     
     if(velocity.x < 0 && scale.x > 0) {

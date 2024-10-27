@@ -52,37 +52,7 @@ class DungeonGame extends FlameGame with HasCollisionDetection {
       playerLife.text = '${player.life}';
     }
     else {
-      if(canShow) {
-
-        startText.textRenderer = TextPaint(
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 32,
-            fontFamily: 'Pixel',
-          ),
-        );
-
-        show++;
-        if(show >= maxShow) {
-          show = 0;
-          canShow = false;
-
-          startText.textRenderer = TextPaint(
-            style: const TextStyle(
-              color: Colors.white10,
-              fontSize: 32,
-              fontFamily: 'Pixel',
-            ),
-          );
-        }
-      }
-      else {
-        show++;
-        if(show >= maxShow) {
-          show = 0;
-          canShow = true;
-        }
-      }
+      _startScreenEffect();
     }
 
     super.update(dt);
@@ -268,6 +238,39 @@ class DungeonGame extends FlameGame with HasCollisionDetection {
     );
 
     add(startText);
+  }
+  
+  void _startScreenEffect() {
+    if(canShow) {
+      startText.textRenderer = TextPaint(
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 32,
+          fontFamily: 'Pixel',
+        ),
+      );
+
+      show++;
+      if(show >= maxShow) {
+        show = 0;
+        canShow = false;
+
+        startText.textRenderer = TextPaint(
+          style: const TextStyle(
+            color: Colors.white10,
+            fontSize: 32,
+            fontFamily: 'Pixel',
+          ),
+        );
+      }
+    }
+    else {
+      show++;
+      if(show >= maxShow) {
+        show = 0;
+        canShow = true;
+      }
+    }
   }
 
 }

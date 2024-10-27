@@ -66,6 +66,7 @@ class Pistol extends SpriteComponent with HasGameRef<DungeonGame>, CollisionCall
         _shootBullet();
       }
       
+      // Reload
       if(ammo <= 0) {
         Future.delayed(const Duration(seconds: 1), () {
           ammo = 20;
@@ -112,11 +113,14 @@ class Pistol extends SpriteComponent with HasGameRef<DungeonGame>, CollisionCall
     ammos.removeLast().removeFromParent();
 
     int index = 0;
+    double actualX = position.x;
+    double actualY = position.y;
+
     for(final enemy in game.level.enemies) {
       double destX = enemy.position.x + (enemy.width * 0.5);
       double destY = enemy.position.y + (enemy.height * 0.5);
       
-      double value = Scripts.distanceToPoint(position.x, position.y, destX, destY);
+      double value = Scripts.distanceToPoint(actualX, actualY, destX, destY);
 
       if(index == 0) {
         minDist = value;
@@ -131,9 +135,11 @@ class Pistol extends SpriteComponent with HasGameRef<DungeonGame>, CollisionCall
       index++;
     }
 
+    Vector2 direction = (dist - position).normalized();
+
     final bullet = Bullet(
       position: Vector2(position.x, position.y), 
-      dest: dist
+      dest: direction
     );
     game.level.add(bullet);
   }
