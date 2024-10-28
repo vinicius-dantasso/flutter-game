@@ -4,26 +4,18 @@ import 'package:dungeon_mobile/components/actors/bullet.dart';
 import 'package:dungeon_mobile/components/actors/enemy.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flame_audio/flame_audio.dart';
 
 import '../utils/custom_hitbox.dart';
 import '../utils/scripts.dart';
 import '../utils/utils.dart';
 
-enum MageAnim {idle, run, attack, hit}
+enum MageAnim { idle, run, attack, hit }
 
 class Mage extends Enemy {
+  Mage({super.position, super.anchor = Anchor.topLeft});
 
-  Mage({
-    super.position,
-    super.anchor = Anchor.topLeft
-  });
-
-  final hitbox = CustomHitbox(
-    offSetX: 16, 
-    offSetY: 16, 
-    width: 30, 
-    height: 28
-  );
+  final hitbox = CustomHitbox(offSetX: 16, offSetY: 16, width: 30, height: 28);
 
   late final SpriteAnimation idleAnim;
   late final SpriteAnimation runAnim;
@@ -39,9 +31,8 @@ class Mage extends Enemy {
     _loadAnims();
 
     add(RectangleHitbox(
-      position: Vector2(hitbox.offSetX, hitbox.offSetY),
-      size: Vector2(hitbox.width, hitbox.height)
-    ));
+        position: Vector2(hitbox.offSetX, hitbox.offSetY),
+        size: Vector2(hitbox.width, hitbox.height)));
 
     collisions = game.level.collisions;
 
@@ -50,18 +41,16 @@ class Mage extends Enemy {
 
   @override
   void update(double dt) {
-
     _nextAction(dt);
 
-    if(life <= 0) {
+    if (life <= 0) {
       game.level.enemies.remove(this);
       removeFromParent();
     }
-    
-    if(velocity.x < 0 && scale.x > 0) {
+
+    if (velocity.x < 0 && scale.x > 0) {
       flipHorizontallyAroundCenter();
-    }
-    else if(velocity.x > 0 && scale.x < 0) {
+    } else if (velocity.x > 0 && scale.x < 0) {
       flipHorizontallyAroundCenter();
     }
 
@@ -70,14 +59,17 @@ class Mage extends Enemy {
 
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
-    
-    if(other is Bullet && !other.isMagic) {
+    if (other is Bullet && !other.isMagic) {
       life--;
       hit = true;
+      if (game.playSounds) {
+        FlameAudio.play("sfxEnemyhit.wav", volume: game.soundVolume);
+      }
       double pX = game.player.position.x;
       double pY = game.player.position.y;
 
-      double dir = Scripts.pointDirection(pX, pY, other.position.x, other.position.y);
+      double dir =
+          Scripts.pointDirection(pX, pY, other.position.x, other.position.y);
       knockBackDir = dir;
       knockBackSpd = 150.0;
       state = EnemyState.hit;
@@ -91,9 +83,8 @@ class Mage extends Enemy {
 
   @override
   void followState() {
-    
     castCharge++;
-    if(castCharge >= cast) {
+    if (castCharge >= cast) {
       castCharge = 0;
       current = MageAnim.attack;
 
@@ -101,18 +92,16 @@ class Mage extends Enemy {
       double dY = game.player.position.y + (game.player.height * 0.5);
 
       final magic = Bullet(
-        position: Vector2(position.x, position.y),
-        dest: Vector2(dX, dY),
-        isMagic: true
-      );
+          position: Vector2(position.x, position.y),
+          dest: Vector2(dX, dY),
+          isMagic: true);
 
       game.level.add(magic);
     }
 
-    if(Scripts.distanceToPoint(
-      position.x, position.y, 
-      game.player.position.x, game.player.position.y
-    ) <= 300) {
+    if (Scripts.distanceToPoint(position.x, position.y, game.player.position.x,
+            game.player.position.y) <=
+        300) {
       state = EnemyState.choose;
     }
 
@@ -121,7 +110,6 @@ class Mage extends Enemy {
 
   @override
   void hitState() {
-    
     knockBackSpd = Scripts.lerp(knockBackSpd, 0.0, 0.3);
 
     velocity.x = Scripts.lengthdirX(knockBackSpd, knockBackDir);
@@ -135,9 +123,8 @@ class Mage extends Enemy {
 
     super.hitState();
   }
-  
-  void _loadAnims() {
 
+  void _loadAnims() {
     idleAnim = _setSprite('Idle', 1, 1.0);
     runAnim = _setSprite('Run', 4, 0.2);
     attackAnim = _setSprite('Attack', 1, 1.0);
@@ -151,52 +138,46 @@ class Mage extends Enemy {
     };
 
     current = MageAnim.idle;
-
   }
-  
+
   SpriteAnimation _setSprite(String state, int amount, double stepTime) {
     return SpriteAnimation.fromFrameData(
-      game.images.fromCache('Enemies/Mage/$state.png'),
-      SpriteAnimationData.sequenced(
-        amount: amount, 
-        stepTime: stepTime, 
-        textureSize: Vector2.all(64)
-      )
-    );
+        game.images.fromCache('Enemies/Mage/$state.png'),
+        SpriteAnimationData.sequenced(
+            amount: amount, stepTime: stepTime, textureSize: Vector2.all(64)));
   }
-  
-  void _nextAction(double dt) {
 
-    if(Scripts.distanceToPoint(
-      position.x, position.y, 
-      game.player.position.x, game.player.position.y
-    ) <= 250 && !hit) {
+  void _nextAction(double dt) {
+    if (Scripts.distanceToPoint(position.x, position.y, game.player.position.x,
+                game.player.position.y) <=
+            250 &&
+        !hit) {
       state = EnemyState.follow;
     }
 
-    switch(state) {
+    switch (state) {
       case EnemyState.choose:
         chooseState();
-      break;
+        break;
 
       case EnemyState.wander:
         current = MageAnim.run;
         wanderState();
-      break;
+        break;
 
       case EnemyState.follow:
         followState();
-      break;
+        break;
 
       case EnemyState.stop:
         current = MageAnim.idle;
         velocity.x = 0.0;
         velocity.y = 0.0;
-      break;
+        break;
 
       case EnemyState.hit:
         hitState();
-      break;
+        break;
     }
 
     position.x += velocity.x * dt;
@@ -204,17 +185,15 @@ class Mage extends Enemy {
 
     position.y += velocity.y * dt;
     _checkVerticalCollisions();
-
   }
 
   void _checkHorizontalCollisions() {
-    for(final block in collisions) {
-      if(checkCollisions(this, block)) {
-        if(velocity.x > 0) {
+    for (final block in collisions) {
+      if (checkCollisions(this, block)) {
+        if (velocity.x > 0) {
           velocity.x = 0;
           position.x = block.x - hitbox.offSetX - hitbox.width;
-        }
-        else if(velocity.x < 0) {
+        } else if (velocity.x < 0) {
           velocity.x = 0;
           position.x = block.x + block.width + hitbox.width + hitbox.offSetX;
         }
@@ -222,15 +201,14 @@ class Mage extends Enemy {
       }
     }
   }
-  
+
   void _checkVerticalCollisions() {
-    for(final block in collisions) {
-      if(checkCollisions(this, block)) {
-        if(velocity.y > 0) {
+    for (final block in collisions) {
+      if (checkCollisions(this, block)) {
+        if (velocity.y > 0) {
           velocity.y = 0;
           position.y = block.y - hitbox.height - hitbox.offSetY;
-        }
-        else if(velocity.y < 0) {
+        } else if (velocity.y < 0) {
           velocity.y = 0;
           position.y = block.y + block.height - hitbox.offSetY;
         }
@@ -238,5 +216,4 @@ class Mage extends Enemy {
       }
     }
   }
-
 }

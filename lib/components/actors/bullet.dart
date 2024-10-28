@@ -6,24 +6,15 @@ import 'package:dungeon_mobile/dungeon_game.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 
-class Bullet extends SpriteComponent with HasGameRef<DungeonGame>, CollisionCallbacks {
-
+class Bullet extends SpriteComponent
+    with HasGameRef<DungeonGame>, CollisionCallbacks {
   Vector2 dest;
   bool isMagic;
 
-  Bullet({
-    super.position,
-    super.size,
-    required this.dest,
-    this.isMagic = false
-  });
+  Bullet(
+      {super.position, super.size, required this.dest, this.isMagic = false});
 
-  final hitbox = CustomHitbox(
-    offSetX: 8, 
-    offSetY: 8, 
-    width: 16, 
-    height: 16
-  );
+  final hitbox = CustomHitbox(offSetX: 8, offSetY: 8, width: 16, height: 16);
 
   double spd = 500;
   double hSpd = 0;
@@ -31,16 +22,14 @@ class Bullet extends SpriteComponent with HasGameRef<DungeonGame>, CollisionCall
 
   @override
   FutureOr<void> onLoad() {
-
     add(RectangleHitbox(
       position: Vector2(hitbox.offSetX, hitbox.offSetY),
       size: Vector2(hitbox.width, hitbox.height),
     ));
 
-    if(!isMagic) {
+    if (!isMagic) {
       sprite = Sprite(game.images.fromCache('Items/Bullet.png'));
-    }
-    else {
+    } else {
       sprite = Sprite(game.images.fromCache('Items/Magic.png'));
     }
 
@@ -49,7 +38,6 @@ class Bullet extends SpriteComponent with HasGameRef<DungeonGame>, CollisionCall
 
   @override
   void update(double dt) {
-    
     position += dest * spd * dt;
 
     Future.delayed(const Duration(milliseconds: 800), () => removeFromParent());
@@ -59,8 +47,7 @@ class Bullet extends SpriteComponent with HasGameRef<DungeonGame>, CollisionCall
 
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
-    
-    if(other is Wall) removeFromParent();
+    if (other is Wall) removeFromParent();
 
     super.onCollision(intersectionPoints, other);
   }

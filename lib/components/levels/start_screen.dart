@@ -1,12 +1,12 @@
 import 'package:dungeon_mobile/dungeon_game.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
+import 'package:flame_audio/flame_audio.dart';
 
-class StartScreen extends SpriteComponent with HasGameRef<DungeonGame>, TapCallbacks {
-
+class StartScreen extends SpriteComponent
+    with HasGameRef<DungeonGame>, TapCallbacks {
   @override
   Future<void> onLoad() async {
-    
     sprite = Sprite(game.images.fromCache('Menus/Menu_Screen.png'));
     size = Vector2(game.size.x, game.size.y);
 

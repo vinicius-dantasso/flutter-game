@@ -1,13 +1,14 @@
 name: dungeon_mobile
 description: "A new Flutter project."
-publish_to: 'none'
+publish_to: "none"
 version: 0.1.0
 
 environment:
-  sdk: '>=3.4.1 <4.0.0'
+  sdk: ">=3.4.1 <4.0.0"
 
 dependencies:
   flame: ^1.21.0
+  flame_audio: ^2.10.5
   flame_tiled: ^1.21.0
   flutter:
     sdk: flutter
@@ -19,11 +20,10 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-
   fonts:
     - family: Pixel
       fonts:
-        - asset: assets/fonts/M5X7.ttf
+        - asset: assets/fonts/M5X7.TTF
 
   assets:
     - assets/tiles/
@@ -35,4 +35,4 @@ flutter:
     - assets/images/Enemies/Mage/
     - assets/images/Traps/
     - assets/images/Menus/
-    - assets/sounds/
+    - assets/audio/

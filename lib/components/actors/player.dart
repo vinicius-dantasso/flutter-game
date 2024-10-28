@@ -7,20 +7,18 @@ import 'package:dungeon_mobile/components/utils/scripts.dart';
 import 'package:dungeon_mobile/dungeon_game.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flame_audio/flame_audio.dart';
 
 import '../actors/pistol.dart';
 import '../actors/wall.dart';
 import '../utils/custom_hitbox.dart';
 import '../utils/utils.dart';
 
-enum PlayerState {idle, running, hit, dead}
+enum PlayerState { idle, running, hit, dead }
 
-class Player extends SpriteAnimationGroupComponent with HasGameRef<DungeonGame>, CollisionCallbacks {
-
-  Player({
-    super.position,
-    super.anchor = Anchor.topLeft
-  });
+class Player extends SpriteAnimationGroupComponent
+    with HasGameRef<DungeonGame>, CollisionCallbacks {
+  Player({super.position, super.anchor = Anchor.topLeft});
 
   late final SpriteAnimation idleAnim;
   late final SpriteAnimation runAnim;
@@ -30,12 +28,8 @@ class Player extends SpriteAnimationGroupComponent with HasGameRef<DungeonGame>,
   late Pistol gun;
 
   List<Wall> collisions = [];
-  CustomHitbox hitbox = CustomHitbox(
-    offSetX: 22, 
-    offSetY: 24, 
-    width: 18, 
-    height: 28
-  );
+  CustomHitbox hitbox =
+      CustomHitbox(offSetX: 22, offSetY: 24, width: 18, height: 28);
 
   double hSpd = 0;
   double vSpd = 0;
@@ -55,7 +49,6 @@ class Player extends SpriteAnimationGroupComponent with HasGameRef<DungeonGame>,
 
   @override
   FutureOr<void> onLoad() {
-
     _loadAllAnims();
 
     add(RectangleHitbox(
@@ -68,11 +61,10 @@ class Player extends SpriteAnimationGroupComponent with HasGameRef<DungeonGame>,
 
   @override
   void update(double dt) {
-    if(!hit && life > 0) {
+    if (!hit && life > 0) {
       _updatePlayerState();
       _updatePlayerMovement(dt);
-    }
-    else if(hit && life > 0) {
+    } else if (hit && life > 0) {
       knockBackSpd = Scripts.lerp(knockBackSpd, 0, 0.3);
       velocity.x = Scripts.lengthdirX(knockBackSpd, knockBackDir);
       velocity.y = Scripts.lengthdirX(knockBackSpd, knockBackDir);
@@ -89,10 +81,10 @@ class Player extends SpriteAnimationGroupComponent with HasGameRef<DungeonGame>,
       });
     }
 
-    if(life <= 0) {
+    if (life <= 0) {
       current = PlayerState.dead;
       isDead = true;
-      if(showOver) {
+      if (showOver) {
         showOver = false;
         _showGameOver();
       }
@@ -103,23 +95,21 @@ class Player extends SpriteAnimationGroupComponent with HasGameRef<DungeonGame>,
 
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
-    
-    if(other is Pistol && !other.collected && life > 0) {
+    if (other is Pistol && !other.collected && life > 0) {
       other.collidedWithPlayer();
       gun = other;
       hasGun = true;
-    }
-    else if(other is Enemy || (other is Trap && other.current == TrapState.open) && life > 0) {
+    } else if (other is Enemy ||
+        (other is Trap && other.current == TrapState.open) && life > 0) {
       _addKnockBack(other);
-    }
-    else if(other is Bullet && other.isMagic && life > 0) {
+    } else if (other is Bullet && other.isMagic && life > 0) {
       _addKnockBack(other);
       other.removeFromParent();
     }
 
     super.onCollision(intersectionPoints, other);
   }
-  
+
   void _loadAllAnims() {
     idleAnim = _setSprite('Idle', 2, 0.5);
     runAnim = _setSprite('Run', 4, 0.3);
@@ -135,41 +125,32 @@ class Player extends SpriteAnimationGroupComponent with HasGameRef<DungeonGame>,
 
     current = PlayerState.idle;
   }
-  
+
   SpriteAnimation _setSprite(String state, int amount, double stepTime) {
-    
     return SpriteAnimation.fromFrameData(
-      game.images.fromCache('Player/$state.png'),
-      SpriteAnimationData.sequenced(
-        amount: amount, 
-        stepTime: stepTime, 
-        textureSize: Vector2.all(64)
-      )
-    );
-
+        game.images.fromCache('Player/$state.png'),
+        SpriteAnimationData.sequenced(
+            amount: amount, stepTime: stepTime, textureSize: Vector2.all(64)));
   }
-  
-  void _updatePlayerState() {
 
+  void _updatePlayerState() {
     PlayerState playerState = PlayerState.idle;
 
-    if(velocity.x < 0 && scale.x > 0) {
+    if (velocity.x < 0 && scale.x > 0) {
       lookingRight = false;
       flipHorizontallyAroundCenter();
-    }
-    else if(velocity.x > 0 && scale.x < 0) {
+    } else if (velocity.x > 0 && scale.x < 0) {
       lookingRight = true;
       flipHorizontallyAroundCenter();
     }
 
-    if(velocity.x > 0 || velocity.x < 0) {
+    if (velocity.x > 0 || velocity.x < 0) {
       playerState = PlayerState.running;
     }
 
     current = playerState;
-
   }
-  
+
   void _updatePlayerMovement(double dt) {
     velocity.x = hSpd * spd;
     position.x += velocity.x * dt;
@@ -181,15 +162,14 @@ class Player extends SpriteAnimationGroupComponent with HasGameRef<DungeonGame>,
 
     _checkVerticalCollisions();
   }
-  
+
   void _checkHorizontalCollisions() {
-    for(final block in collisions) {
-      if(checkCollisions(this, block)) {
-        if(velocity.x > 0) {
+    for (final block in collisions) {
+      if (checkCollisions(this, block)) {
+        if (velocity.x > 0) {
           velocity.x = 0;
           position.x = block.x - hitbox.offSetX - hitbox.width;
-        }
-        else if(velocity.x < 0) {
+        } else if (velocity.x < 0) {
           velocity.x = 0;
           position.x = block.x + block.width + hitbox.width + hitbox.offSetX;
         }
@@ -197,15 +177,14 @@ class Player extends SpriteAnimationGroupComponent with HasGameRef<DungeonGame>,
       }
     }
   }
-  
+
   void _checkVerticalCollisions() {
-    for(final block in collisions) {
-      if(checkCollisions(this, block)) {
-        if(velocity.y > 0) {
+    for (final block in collisions) {
+      if (checkCollisions(this, block)) {
+        if (velocity.y > 0) {
           velocity.y = 0;
           position.y = block.y - hitbox.height - hitbox.offSetY;
-        }
-        else if(velocity.y < 0) {
+        } else if (velocity.y < 0) {
           velocity.y = 0;
           position.y = block.y + block.height - hitbox.offSetY;
         }
@@ -213,8 +192,12 @@ class Player extends SpriteAnimationGroupComponent with HasGameRef<DungeonGame>,
       }
     }
   }
-  
-  void _addKnockBack(other) {
+
+  void _addKnockBack(other) async {
+    if (game.playSounds) {
+      await FlameAudio.play("sfxHit.wav", volume: game.soundVolume);
+    }
+
     hit = true;
     life--;
 
@@ -226,17 +209,20 @@ class Player extends SpriteAnimationGroupComponent with HasGameRef<DungeonGame>,
     knockBackSpd = 400.0;
     current = PlayerState.hit;
   }
-  
-  void _showGameOver() {
-    final over = SpriteComponent(
-      sprite: Sprite(game.images.fromCache('Menus/Game_Over.png')),
-      position: Vector2((game.size.x * 0.5) - 200, (game.size.y * 0.5) - 100),
-      size: Vector2(400, 120),
-      priority: 4
-    );
-    game.add(over);
 
+  void _showGameOver() {
+    FlameAudio.bgm.stop();
+    final over = SpriteComponent(
+        sprite: Sprite(game.images.fromCache('Menus/Game_Over.png')),
+        position: Vector2((game.size.x * 0.5) - 200, (game.size.y * 0.5) - 100),
+        size: Vector2(400, 120),
+        priority: 4);
+    game.add(over);
+    Future.delayed(const Duration(seconds: 1), () {
+      if (game.playSounds) {
+        FlameAudio.play("DeathTheme.wav", volume: game.soundVolume * 0.5);
+      }
+    });
     Future.delayed(const Duration(seconds: 10), () => game.resetGame());
   }
-
 }
