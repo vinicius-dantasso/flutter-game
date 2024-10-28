@@ -9,7 +9,9 @@ class StartScreen extends SpriteComponent
   Future<void> onLoad() async {
     sprite = Sprite(game.images.fromCache('Menus/Menu_Screen.png'));
     size = Vector2(game.size.x, game.size.y);
-
+    if (game.playSounds) {
+      FlameAudio.bgm.play("MainTheme.wav", volume: game.soundVolume * 0.2);
+    }
     super.onLoad();
   }
 

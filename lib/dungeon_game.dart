@@ -37,12 +37,8 @@ class DungeonGame extends FlameGame with HasCollisionDetection {
   @override
   FutureOr<void> onLoad() async {
     await images.loadAllImages();
-
+    FlameAudio.bgm.initialize();
     add(StartScreen());
-    if (playSounds) {
-      FlameAudio.bgm.initialize();
-      FlameAudio.bgm.play("MainTheme.wav", volume: soundVolume * 0.2);
-    }
     _showStartText();
 
     return super.onLoad();
