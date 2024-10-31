@@ -15,6 +15,8 @@ class Door extends SpriteGroupComponent
   late final Sprite closed;
   late final Sprite opened;
 
+  bool isClosed = true;
+
   @override
   FutureOr<void> onLoad() {
     closed = Sprite(game.images.fromCache('Items/Door_Close.png'));
@@ -33,6 +35,11 @@ class Door extends SpriteGroupComponent
   void update(double dt) {
     if (game.level.enemies.isEmpty && game.player.hasGun) {
       current = DoorState.open;
+      
+      if(isClosed) {
+        isClosed = false;
+        if(game.playSounds) FlameAudio.play('sfxPortaAbrida.wav', volume: game.soundVolume);
+      }
     }
 
     super.update(dt);
@@ -49,9 +56,6 @@ class Door extends SpriteGroupComponent
   }
 
   void _loadNextLevel() {
-    if (game.playSounds) {
-      FlameAudio.play("sfxPortaAbrida.wav", volume: game.soundVolume);
-    }
     Future.delayed(const Duration(seconds: 2), () {
       game.loadNextLevel();
     });

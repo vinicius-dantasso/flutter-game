@@ -61,10 +61,6 @@ class Pistol extends SpriteComponent
       if (ammo <= 0) {
         Future.delayed(const Duration(seconds: 1), () {
           ammo = 20;
-          if (game.playSounds) {
-            FlameAudio.play("sfxRecarregarArma.wav",
-                volume: game.soundVolume * 0.3);
-          }
           _drawAmmo();
         });
       }
@@ -101,12 +97,11 @@ class Pistol extends SpriteComponent
   }
 
   void _shootBullet() {
-    if (game.playSounds) {
-      FlameAudio.play("sfxTiroPlayer.wav", volume: game.soundVolume * 0.3);
-    }
     canShoot = false;
     ammo--;
     ammos.removeLast().removeFromParent();
+
+    if (game.playSounds) FlameAudio.play("sfxTiroPlayer.wav", volume: game.soundVolume);
 
     int index = 0;
     double actualX = position.x;
@@ -152,5 +147,7 @@ class Pistol extends SpriteComponent
       ammos.add(sprAmmo);
       game.add(sprAmmo);
     }
+
+    if (game.playSounds) FlameAudio.play("sfxRecarregarArma.wav", volume: game.soundVolume);
   }
 }

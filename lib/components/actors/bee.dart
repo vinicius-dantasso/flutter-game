@@ -56,19 +56,17 @@ class Bee extends Enemy {
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     if (other is Bullet) {
-      if (game.playSounds) {
-        FlameAudio.play("sfxEnemyhit.wav", volume: game.soundVolume);
-      }
       hit = true;
       life--;
       double pX = game.player.position.x;
       double pY = game.player.position.y;
 
-      double dir =
-          Scripts.pointDirection(pX, pY, other.position.x, other.position.y);
+      double dir = Scripts.pointDirection(pX, pY, other.position.x, other.position.y);
       knockBackDir = dir;
       knockBackSpd = 150.0;
       state = EnemyState.hit;
+
+      if (game.playSounds) FlameAudio.play("sfxEnemyhit.wav", volume: game.soundVolume);
 
       current = BeeAnim.hit;
       other.removeFromParent();

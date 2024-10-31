@@ -62,17 +62,15 @@ class Mage extends Enemy {
     if (other is Bullet && !other.isMagic) {
       life--;
       hit = true;
-      if (game.playSounds) {
-        FlameAudio.play("sfxEnemyhit.wav", volume: game.soundVolume);
-      }
       double pX = game.player.position.x;
       double pY = game.player.position.y;
 
-      double dir =
-          Scripts.pointDirection(pX, pY, other.position.x, other.position.y);
+      double dir = Scripts.pointDirection(pX, pY, other.position.x, other.position.y);
       knockBackDir = dir;
       knockBackSpd = 150.0;
       state = EnemyState.hit;
+
+      if (game.playSounds) FlameAudio.play("sfxEnemyhit.wav", volume: game.soundVolume);
 
       current = MageAnim.hit;
       other.removeFromParent();
@@ -92,9 +90,12 @@ class Mage extends Enemy {
       double dY = game.player.position.y + (game.player.height * 0.5);
 
       final magic = Bullet(
-          position: Vector2(position.x, position.y),
-          dest: Vector2(dX, dY),
-          isMagic: true);
+        position: Vector2(position.x, position.y),
+        dest: Vector2(dX, dY),
+        isMagic: true
+      );
+
+      if(game.playSounds) FlameAudio.play('sfxTitoInimigo.wav', volume: game.soundVolume);
 
       game.level.add(magic);
     }

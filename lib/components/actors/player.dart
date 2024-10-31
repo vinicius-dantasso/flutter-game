@@ -28,8 +28,12 @@ class Player extends SpriteAnimationGroupComponent
   late Pistol gun;
 
   List<Wall> collisions = [];
-  CustomHitbox hitbox =
-      CustomHitbox(offSetX: 22, offSetY: 24, width: 18, height: 28);
+  CustomHitbox hitbox = CustomHitbox(
+    offSetX: 22, 
+    offSetY: 24, 
+    width: 18, 
+    height: 28
+  );
 
   double hSpd = 0;
   double vSpd = 0;
@@ -64,7 +68,8 @@ class Player extends SpriteAnimationGroupComponent
     if (!hit && life > 0) {
       _updatePlayerState();
       _updatePlayerMovement(dt);
-    } else if (hit && life > 0) {
+    } 
+    else if (hit && life > 0) {
       knockBackSpd = Scripts.lerp(knockBackSpd, 0, 0.3);
       velocity.x = Scripts.lengthdirX(knockBackSpd, knockBackDir);
       velocity.y = Scripts.lengthdirX(knockBackSpd, knockBackDir);
@@ -86,6 +91,7 @@ class Player extends SpriteAnimationGroupComponent
       isDead = true;
       if (showOver) {
         showOver = false;
+        if (game.playSounds) FlameAudio.play("DeathTheme.wav", volume: game.soundVolume);
         _showGameOver();
       }
     }
@@ -193,13 +199,11 @@ class Player extends SpriteAnimationGroupComponent
     }
   }
 
-  void _addKnockBack(other) async {
-    if (game.playSounds) {
-      await FlameAudio.play("sfxHit.wav", volume: game.soundVolume);
-    }
-
+  void _addKnockBack(other) {
     hit = true;
     life--;
+
+    if (game.playSounds) FlameAudio.play("sfxHit.wav", volume: game.soundVolume);
 
     double ox = other.position.x;
     double oy = other.position.y;
@@ -218,11 +222,6 @@ class Player extends SpriteAnimationGroupComponent
         size: Vector2(400, 120),
         priority: 4);
     game.add(over);
-    Future.delayed(const Duration(seconds: 1), () {
-      if (game.playSounds) {
-        FlameAudio.play("DeathTheme.wav", volume: game.soundVolume * 0.5);
-      }
-    });
     Future.delayed(const Duration(seconds: 10), () => game.resetGame());
   }
 }

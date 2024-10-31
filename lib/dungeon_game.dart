@@ -4,7 +4,6 @@ import 'package:dungeon_mobile/components/actors/pistol.dart';
 import 'package:dungeon_mobile/components/levels/levels.dart';
 import 'package:dungeon_mobile/components/utils/shot_buttom.dart';
 import 'package:flame/components.dart';
-import 'package:flame/flame.dart';
 import 'package:flame/game.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
@@ -37,9 +36,10 @@ class DungeonGame extends FlameGame with HasCollisionDetection {
   @override
   FutureOr<void> onLoad() async {
     await images.loadAllImages();
-    FlameAudio.bgm.initialize();
     add(StartScreen());
     _showStartText();
+
+    if(playSounds) FlameAudio.loopLongAudio('MainTheme.wav', volume: soundVolume * 0.3);
 
     return super.onLoad();
   }
